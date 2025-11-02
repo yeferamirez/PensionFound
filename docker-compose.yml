@@ -1,0 +1,120 @@
+services:
+  # -----------------------
+  # SEQ - Central de logs
+  # -----------------------
+  seq:
+    image: datalust/seq:latest
+    ports:
+      - "5340:80"
+      - "5341:5341"
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_ADMINPASSWORDHASH=QEfU0sEraJh6VKrCqufKPjE6mdc2IwjDIifOTkAxcG0BNQzvf4dqoTM/tH5CNMpXNPfIgHrFyctNCGWZ0pprWdr3XoQWHoHhrgbVpiW6sKZR
+    networks:
+      - clientnet
+
+  # -----------------------
+  # PensionFund API
+  # -----------------------
+  pensionfund.api:
+    image: pensionfundapi
+    container_name: PensionFund.Api
+    labels:
+      com.microsoft.visual-studio.project-name: "PensionFund.Api"
+    build:
+      context: .
+      dockerfile: fund/PensionFund.Api/Dockerfile
+      args:
+        - BUILD_CONFIGURATION=Debug   
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Local
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ConnectionStrings__DefaultConnection=Server=clients-db;Database=clients;User Id=sa;Password=Password1234!;TrustServerCertificate=True;MultipleActiveResultSets=true
+      - AWS__ServiceURL=http://localstack:4566
+      - AWS__Region=us-east-1
+      - AWS__AccessKey=fake
+      - AWS__SecretKey=fake
+      - DynamoSettings__ServiceURL=http://dynamodb:8000
+      - DynamoSettings__Region=us-east-1
+      - DynamoSettings__AccessKeyId=fakeMyKeyId
+      - DynamoSettings__SecretAccessKey=fakeSecretAccessKey
+    networks:
+      - clientnet
+    ports:
+      - "6500:8080"
+    depends_on:
+      - clients-db
+      - dynamodb
+      - dynamodb-admin
+      - localstack
+      - seq
+
+  # -----------------------
+  # SQL Server
+  # -----------------------
+  clients-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: PensionFund.SqlServer
+    environment:
+      - SA_PASSWORD=Password1234!
+      - ACCEPT_EULA=Y
+    networks:
+      - clientnet
+    volumes:
+      - client-sqldata:/var/opt/mssql
+    ports:
+      - "1433:1433"
+
+  # -----------------------
+  # DynamoDB Local
+  # -----------------------
+  dynamodb:
+    image: amazon/dynamodb-local
+    container_name: dynamodb
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /data"
+    networks:
+      - clientnet
+    volumes:
+      - ./dynamo_data:/data
+    ports:
+      - "8000:8000"
+
+  dynamodb-admin:
+    image: aaronshaf/dynamodb-admin
+    container_name: dynamodb-admin
+    environment:
+      - DYNAMO_ENDPOINT=http://host.docker.internal:8000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8010:8001"
+    networks:
+      - clientnet
+    depends_on:
+      - dynamodb
+
+  # -----------------------
+  # LocalStack - emulando SQS
+  # -----------------------
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack
+    ports:
+      - "4566:4566"
+      - "4571:4571"
+    environment:
+      - SERVICES=sqs
+      - DEBUG=1
+    volumes:
+      - localstack_data:/var/lib/localstack
+    networks:
+      - clientnet
+
+networks:
+  clientnet:
+
+volumes:
+  client-sqldata:
+  dynamo_data:
+  localstack_data:
+
