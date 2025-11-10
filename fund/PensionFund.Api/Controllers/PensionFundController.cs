@@ -39,13 +39,13 @@ public class PensionFundController : BaseApiController
         {
             if (result.HasError<NotFoundError>())
             {
-                return this.NotFound();
+                return this.NotFound(result.Errors);
             }
 
             return this.BadRequest(result.Errors);
         }
 
-        return this.NoContent();
+        return this.Created("subscribted", result.Value);
     }
 
     [HttpPost]
@@ -56,9 +56,19 @@ public class PensionFundController : BaseApiController
     {
         var request = this.mapper.Map<UnsubscribeCommand>(model);
 
-        var unsubscribe = await this.sender.Send(request);
+        var result = await this.sender.Send(request);
 
-        return this.Created("unsubscribe", unsubscribe);
+        if (!result.IsSuccess)
+        {
+            if (result.HasError<NotFoundError>())
+            {
+                return this.NotFound(result.Errors);
+            }
+
+            return this.BadRequest(result.Errors);
+        }
+
+        return this.Created("unsubscribted", result.Value);
     }
 
 

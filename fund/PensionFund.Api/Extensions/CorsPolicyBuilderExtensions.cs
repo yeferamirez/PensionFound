@@ -9,7 +9,11 @@ public static class CorsPolicyBuilderExtensions
     public static void AddDefaultCors(this CorsPolicyBuilder corsBuilder)
     {
         corsBuilder
-            .WithOrigins([])
+            .WithOrigins(
+            [   
+                "http://localhost:4200",
+                "https://localhost:4200"
+            ])
             .WithHeaders("Authorization", "Content-Type", "Accept", "X-Requested-With", "X-HTTP-Method-Override")
             .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
     }

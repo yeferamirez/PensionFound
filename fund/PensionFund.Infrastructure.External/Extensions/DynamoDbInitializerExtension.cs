@@ -31,25 +31,20 @@ public class DynamoDbInitializer
             {
                 TableName = tableName,
                 AttributeDefinitions = new List<AttributeDefinition>
-            {
-                new AttributeDefinition
                 {
-                    AttributeName = partitionKey,
-                    AttributeType = "S"
-                }
-            },
+                    new AttributeDefinition
+                    {
+                        AttributeName = partitionKey,
+                        AttributeType = "S"
+                    }
+                },
                 KeySchema = new List<KeySchemaElement>
-            {
-                new KeySchemaElement
                 {
-                    AttributeName = partitionKey,
-                    KeyType = "HASH"
-                }
-            },
-                ProvisionedThroughput = new ProvisionedThroughput
-                {
-                    ReadCapacityUnits = 5,
-                    WriteCapacityUnits = 5
+                    new KeySchemaElement
+                    {
+                        AttributeName = partitionKey,
+                        KeyType = "HASH"
+                    }
                 }
             };
 
@@ -63,29 +58,24 @@ public class DynamoDbInitializer
                     });
 
                 createRequest.GlobalSecondaryIndexes = new List<GlobalSecondaryIndex>
-            {
-                new GlobalSecondaryIndex
                 {
-                    IndexName = "ModificationDate-index",
-                    KeySchema = new List<KeySchemaElement>
+                    new GlobalSecondaryIndex
                     {
-                        new KeySchemaElement
+                        IndexName = "ModificationDate-index",
+                        KeySchema = new List<KeySchemaElement>
                         {
-                            AttributeName = "ModificationDate",
-                            KeyType = "HASH"
+                            new KeySchemaElement
+                            {
+                                AttributeName = "ModificationDate",
+                                KeyType = "HASH"
+                            }
+                        },
+                        Projection = new Projection
+                        {
+                            ProjectionType = ProjectionType.ALL
                         }
-                    },
-                    Projection = new Projection
-                    {
-                        ProjectionType = ProjectionType.ALL
-                    },
-                    ProvisionedThroughput = new ProvisionedThroughput
-                    {
-                        ReadCapacityUnits = 5,
-                        WriteCapacityUnits = 5
                     }
-                }
-            };
+                };
             }
 
 
@@ -95,7 +85,7 @@ public class DynamoDbInitializer
         var describe = await _client.DescribeTableAsync(tableName);
         if (describe.Table.TableStatus == TableStatus.ACTIVE)
         {
-            if (tableName == "Configurations") // O usa nameof(FundConfiguration) si prefieres
+            if (tableName == "Configurations")
             {
                 var repo = new DynamoRepository<FundConfiguration>(_client);
                 await FundConfigurationSeed.SeedAsync(repo);

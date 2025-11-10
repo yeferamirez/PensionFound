@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PensionFund.Application.Repositories;
 using PensionFund.Domain.Entities;
+using PensionFund.Domain.Interfaces.Repositories;
 
 namespace PensionFund.Infrastructure.EF.Repositories;
 public class ClientRepository(PensionFundDbContext context) : EFRepository<Client>(context), IClientRepository
@@ -19,8 +19,7 @@ public class ClientRepository(PensionFundDbContext context) : EFRepository<Clien
         query = query.Where(c =>
             c.Visits.Any(v => v.Site.City == city) &&
             c.Inscriptions.Any(i =>
-                i.Product.Availabilities.Any(d =>
-                    d.Site.City == city &&
+                i.Product.Availabilities.All(d =>
                     c.Visits.Any(v => v.SiteId == d.SiteId)
                 )
             )

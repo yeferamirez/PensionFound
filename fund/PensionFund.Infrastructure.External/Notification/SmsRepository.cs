@@ -4,7 +4,7 @@ namespace PensionFund.Infrastructure.External.Notification;
 public class SmsRepository : ISmsRepository
 {
 
-    public async Task SendNotification(string phioneNumber)
+    public async Task SendNotification(string phoneNumber)
     {
 
     }

@@ -1,4 +1,6 @@
-﻿using Ardalis.GuardClauses;
+﻿using Amazon.SimpleNotificationService;
+using Amazon.SQS;
+using Ardalis.GuardClauses;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -127,6 +129,8 @@ public static class ApiServiceRegister
         })
             .AddCommonSwaggerServices<Program>();
 
+        services.AddAWSLambdaHosting(LambdaEventSource.ApplicationLoadBalancer);
+
         return services;
     }
 
@@ -214,6 +218,14 @@ public static class ApiServiceRegister
                 {
                     h.AccessKey(messagingSettings.AccessKey);
                     h.SecretKey(messagingSettings.SecretKey);
+                    h.Config(new AmazonSimpleNotificationServiceConfig
+                    {
+                        ServiceURL = messagingSettings.ServiceURL
+                    });
+                    h.Config(new AmazonSQSConfig
+                    {
+                        ServiceURL = messagingSettings.ServiceURL
+                    });
                 });
 
                 RegisterEndpoints(cfg, context);

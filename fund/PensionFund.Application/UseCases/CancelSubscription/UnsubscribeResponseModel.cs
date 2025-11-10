@@ -1,5 +1,5 @@
-﻿namespace PensionFund.Application.UseCases.CreateSubscription;
-public class CreateSubcriptionResponseModel
+﻿namespace PensionFund.Application.UseCases.CancelSubscription;
+public class UnsubscribeResponseModel
 {
     public string ClientName { get; set; } = default!;
     public string ProductName { get; set; } = default!;

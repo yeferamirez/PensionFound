@@ -1,7 +1,6 @@
 ﻿using PensionFund.Domain.Entities;
-using PensionFund.Domain.Interfaces.Repositories;
 
-namespace PensionFund.Application.Repositories;
+namespace PensionFund.Domain.Interfaces.Repositories;
 public interface IClientRepository : IRepository<Client>
 {
     Task<Client[]> GetClientsByCityAsync(string city);

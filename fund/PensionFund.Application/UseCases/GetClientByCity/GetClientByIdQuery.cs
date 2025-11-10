@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using PensionFund.Application.Exceptions.Errors;
 using PensionFund.Application.Extensions;
 using PensionFund.Application.Models;
-using PensionFund.Application.Repositories;
+using PensionFund.Domain.Interfaces.Repositories;
 
 namespace PensionFund.Application.UseCases.GetClientByCity;
 public class GetClientByIdQuery : IRequest<Result<GetByCityClientDto>>

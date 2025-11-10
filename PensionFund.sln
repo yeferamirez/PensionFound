@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PensionFund.Infrastructure.
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PensionFundCdk", "fund\PensionFund.Cdk\src\PensionFundCdk\PensionFundCdk.csproj", "{81CFCA68-C86B-4421-5477-C6011E289610}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81CFCA68-C86B-4421-5477-C6011E289610}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81CFCA68-C86B-4421-5477-C6011E289610}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81CFCA68-C86B-4421-5477-C6011E289610}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81CFCA68-C86B-4421-5477-C6011E289610}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -63,6 +69,7 @@ Global
 		{F609A234-702D-40B0-945E-B857F29BE495} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{A16C1635-2FF6-7C54-FBC8-A6EBC5CC63E5} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{5D1997DF-77C6-47D3-BF3B-943BEEC9EB3B} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{81CFCA68-C86B-4421-5477-C6011E289610} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {36E25F9B-59E9-4DEF-A146-5284563353E5}

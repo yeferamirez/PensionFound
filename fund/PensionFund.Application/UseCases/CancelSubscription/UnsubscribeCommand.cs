@@ -7,7 +7,7 @@ using PensionFund.Application.Interfaces;
 using PensionFund.Domain.Entities;
 
 namespace PensionFund.Application.UseCases.CancelSubscription;
-public class UnsubscribeCommand : IRequest<Result<Unit>>
+public class UnsubscribeCommand : IRequest<Result<UnsubscribeResponseModel>>
 {
     public string ClientName { get; set; } = default!;
     public string ClientLastName { get; set; } = default!;
@@ -16,7 +16,7 @@ public class UnsubscribeCommand : IRequest<Result<Unit>>
     public string ProductType { get; set; } = default!;
 }
 
-public class UnsubscribeCommandHandler : IRequestHandler<UnsubscribeCommand, Result<Unit>>
+public class UnsubscribeCommandHandler : IRequestHandler<UnsubscribeCommand, Result<UnsubscribeResponseModel>>
 {
     private readonly IStorageService storageService;
     private readonly TimeProvider timeProvider;
@@ -33,7 +33,7 @@ public class UnsubscribeCommandHandler : IRequestHandler<UnsubscribeCommand, Res
         this.timeProvider = timeProvider;
     }
 
-    public async Task<Result<Unit>> Handle(UnsubscribeCommand request, CancellationToken cancellationToken)
+    public async Task<Result<UnsubscribeResponseModel>> Handle(UnsubscribeCommand request, CancellationToken cancellationToken)
     {
         var transaction = new Transactions
         {
@@ -60,11 +60,22 @@ public class UnsubscribeCommandHandler : IRequestHandler<UnsubscribeCommand, Res
             client.InitialValue = client.InitialValue + Unsubscribe.Value;
             await this.storageService.SaveClient(client);
 
-            return Unit.Value;
+            var response = new UnsubscribeResponseModel
+            {
+                ClientName = transaction.ClientName,
+                ProductName = transaction.ProductName,
+                ProductType = transaction.ProductType,
+                ProductCity = transaction.ProductCity,
+                Value = transaction.Value,
+                State = transaction.State,
+                ModificationDate = transaction.ModificationDate
+            };
+
+            return response;
         }
 
         logger.LogInformation("UnSubcripted Fail - ProductName {ProductName}", transaction.ProductName);
 
-        return Result.Fail(new NotFoundError("El usuario no pertenece a ese fondo"));
+        return Result.Fail(new PensionFundError("El usuario no pertenece a ese fondo"));
     }
 }

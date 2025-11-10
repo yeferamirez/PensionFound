@@ -9,7 +9,7 @@ using PensionFund.Application.Interfaces;
 using PensionFund.Domain.Entities;
 
 namespace PensionFund.Application.UseCases.CreateSubscription;
-public class CreateSubcriptionCommand : IRequest<Result<Unit>>
+public class CreateSubcriptionCommand : IRequest<Result<CreateSubcriptionResponseModel>>
 {
     public string ClientName { get; set; } = default!;
     public string ClientLastName { get; set; } = default!;
@@ -22,7 +22,7 @@ public class CreateSubcriptionCommand : IRequest<Result<Unit>>
     public int Value { get; set; }
 }
 
-public class CreateSubcriptionCommandHandler : IRequestHandler<CreateSubcriptionCommand, Result<Unit>>
+public class CreateSubcriptionCommandHandler : IRequestHandler<CreateSubcriptionCommand, Result<CreateSubcriptionResponseModel>>
 {
 
     private readonly IStorageService storageService;
@@ -43,7 +43,7 @@ public class CreateSubcriptionCommandHandler : IRequestHandler<CreateSubcription
         this.publishEndpoint = publishEndpoint;
     }
 
-    public async Task<Result<Unit>> Handle(CreateSubcriptionCommand request, CancellationToken cancellationToken)
+    public async Task<Result<CreateSubcriptionResponseModel>> Handle(CreateSubcriptionCommand request, CancellationToken cancellationToken)
     {
         var transaction = new Transactions
         {
@@ -65,7 +65,7 @@ public class CreateSubcriptionCommandHandler : IRequestHandler<CreateSubcription
             subscribed.ProductType.Equals(transaction.ProductType) &&
             subscribed.ProductCity.Equals(transaction.ProductCity))
         {
-            return Result.Fail(new NotFoundError("El usuario ya pertenece a ese fondo"));
+            return Result.Fail(new PensionFundError("El usuario ya pertenece a ese fondo"));
         }
 
         var fundConfiguration = await storageService.GetConfigurationAsync(transaction.ProductName);
@@ -85,18 +85,29 @@ public class CreateSubcriptionCommandHandler : IRequestHandler<CreateSubcription
         {
             client.InitialValue = client.InitialValue - (subscribed == null ? transaction.Value : subscribed.Value);
             if (client.InitialValue <= 0)
-                return Result.Fail(new NotFoundError("El usuario no posee el monto suficiente"));
+                return Result.Fail(new PensionFundError("El usuario no posee el monto suficiente"));
             await this.storageService.SaveClient(client);
             await this.storageService.SaveTransaction(transaction);
 
             await this.publishEndpoint.Publish(new Subscripted(request.NotificationType, request.Email, request.PhoneNumber));
 
-            return Unit.Value;
+            var response = new CreateSubcriptionResponseModel
+            {
+                ClientName = transaction.ClientName,
+                ProductName = transaction.ProductName,
+                ProductType = transaction.ProductType,
+                ProductCity = transaction.ProductCity,
+                Value = transaction.Value,
+                State = transaction.State,
+                ModificationDate = transaction.ModificationDate,
+            };
+
+            return response;
         }
 
         logger.LogInformation("Subcription Fail - ProductName {ProductName}", transaction.ProductName);
 
-        return Result.Fail(new NotFoundError("No tiene saldo disponible para vincularse al fondo"));
+        return Result.Fail(new PensionFundError($"No tiene saldo disponible para vincularse al fondo <{transaction.ProductName}>"));
     }
 }
 

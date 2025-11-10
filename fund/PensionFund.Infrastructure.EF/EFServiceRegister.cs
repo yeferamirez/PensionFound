@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PensionFund.Application.Repositories;
 using PensionFund.Domain.Entities;
 using PensionFund.Domain.Interfaces;
 using PensionFund.Domain.Interfaces.Repositories;
@@ -120,10 +119,10 @@ public static class EFServiceRegister
         {
             var availability = new List<Availability>
             {
-                new Availability { SiteId = 1, ProductId = 1 }, // Gimnasio en Norte
-                new Availability { SiteId = 1, ProductId = 2 }, // Natación en Norte
-                new Availability { SiteId = 2, ProductId = 3 }, // Yoga en Sur
-                new Availability { SiteId = 3, ProductId = 2 }  // Natación en Medellín
+                new Availability { SiteId = 1, ProductId = 1 }, 
+                new Availability { SiteId = 1, ProductId = 2 }, 
+                new Availability { SiteId = 2, ProductId = 3 }, 
+                new Availability { SiteId = 3, ProductId = 2 } 
             };
             db.Availabilities.AddRange(availability);
             db.SaveChanges();
